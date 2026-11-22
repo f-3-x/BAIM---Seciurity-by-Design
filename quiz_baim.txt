@@ -1,0 +1,45 @@
+QUIZ: Security by Design (5 pytań)
+
+Pytanie 1: Co zakłada zasada „Shift-Left” w podejściu Security by Design?
+A) Analizę zagrożeń i projektowanie zabezpieczeń przesuwa się na etap planowania, przed pisaniem kodu.
+B) Kontrolę poprawności danych przenosi się z serwera do przeglądarki, aby odciążyć bazę danych.
+C) Sprawdzanie luk bezpieczeństwa odbywa się na samym końcu, po ukończeniu wszystkich modułów.
+D) Zabezpieczenia dodaje się stopniowo w trakcie działania aplikacji na produkcji, reagując na wykryte ataki.
+
+Poprawna odpowiedź: A
+
+
+Pytanie 2: Dlaczego w bezpiecznej wersji aplikacji (Tryb B) zastosowano jednocześnie listę dozwolonych wartości oraz zapytania parametryzowane?
+A) Wyrażenia regularne działają wyłącznie po stronie przeglądarki, więc serwer potrzebuje dodatkowej parametryzacji zapytań.
+B) Sama parametryzacja nie chroni przed SQL Injection przy liczbach całkowitych, dlatego trzeba je wcześniej odfiltrować.
+C) Tworzy to obronę warstwową: błąd w wyrażeniu regularnym nie otworzy drogi do ataku, a serwer nie przetwarza śmieciowych żądań.
+D) SQLite wymaga obu mechanizmów jednocześnie, aby włączyć tryb tylko do odczytu i ukryć wrażliwe kolumny tabeli.
+
+Poprawna odpowiedź: C
+
+
+Pytanie 3: Który z poniższych błędów projektowych stanowi bezpośrednie naruszenie zasady „Fail-Secure”?
+A) Pobranie wszystkich kolumn tabeli przez SELECT *, mimo że wyszukiwarka potrzebuje tylko nazwy użytkownika i stanowiska.
+B) Zwrócenie użytkownikowi surowego komunikatu błędu silnika bazy danych po wpisaniu niepoprawnego znaku.
+C) Ustawienie profilu nowo założonego konta jako publicznego, dopóki użytkownik sam nie zmieni tego w ustawieniach.
+D) Brak sprawdzenia po stronie serwera, czy zwykły użytkownik ma uprawnienia do wyświetlenia cudzej faktury.
+
+Poprawna odpowiedź: B
+
+
+Pytanie 4: Co jest głównym źródłem odmiennego modelu zagrożeń w aplikacjach mobilnych względem aplikacji webowych?
+A) Brak możliwości weryfikacji danych wejściowych po stronie serwera, ponieważ żądania z telefonów omijają standardowe filtry HTTP.
+B) Ograniczenia sprzętowe smartfonów, które wymuszają stosowanie starszych i szybszych algorytmów skrótu, takich jak MD5 lub SHA-1.
+C) Konieczność przechowywania całej bazy użytkowników bezpośrednio w pliku instalacyjnym aplikacji dystrybuowanym w sklepie.
+D) Uruchamianie skompilowanego kodu w niezaufanym środowisku użytkownika, co naraża aplikację na dekompilację i analizę dynamiczną.
+
+Poprawna odpowiedź: D
+
+
+Pytanie 5: Który mechanizm chroni komunikację aplikacji mobilnej przed atakiem Man-in-the-Middle, wymuszając połączenie wyłącznie z konkretnym, z góry określonym serwerem?
+A) Przechowywanie tokenów sesji w Android Keystore lub iOS Keychain.
+B) Zastosowanie mechanizmu Certificate Pinning w kodzie aplikacji.
+C) Zaciemnienie logiki aplikacji za pomocą obfuskacji kodu.
+D) Sprawdzanie przy starcie, czy plik aplikacji nie został ponownie podpisany.
+
+Poprawna odpowiedź: B
