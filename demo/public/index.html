@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hack &amp; Secure Sandbox — Security by Design</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="mode-vulnerable">
+  <div class="container">
+    <!-- NAGŁÓWEK APLIKACJI -->
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-badge">OWASP Top 10 • Injection &amp; Insecure Design</span>
+        <h1>Hack &amp; Secure Sandbox</h1>
+        <p class="subtitle">Wewnętrzna wyszukiwarka pracowników — architektura podatna vs. Security by Design</p>
+      </div>
+
+      <!-- PRZEŁĄCZNIK ARCHITEKTURY (TRYB A / TRYB B) -->
+      <div class="mode-switcher" role="group" aria-label="Wybór architektury">
+        <button id="btnModeA" class="mode-btn active-vulnerable" type="button">
+          <span class="mode-indicator mode-dot-vulnerable" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 2.2L1.8 13.2h12.4L8 2.2z"></path>
+              <line x1="8" y1="6.5" x2="8" y2="9.5"></line>
+              <circle cx="8" cy="11.5" r="0.5" fill="currentColor"></circle>
+            </svg>
+          </span>
+          <div class="mode-text">
+            <strong>Tryb A: Zwykły kod (Podatny)</strong>
+            <small>Insecure Design • Konkatenacja SQL • SELECT *</small>
+          </div>
+        </button>
+
+        <button id="btnModeB" class="mode-btn" type="button">
+          <span class="mode-indicator mode-dot-secure" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 1.8l5.2 2v4.1c0 3.4-2.2 5.7-5.2 6.6-3-0.9-5.2-3.2-5.2-6.6V3.8L8 1.8z"></path>
+              <polyline points="5.8 8.1 7.3 9.6 10.4 6.5"></polyline>
+            </svg>
+          </span>
+          <div class="mode-text">
+            <strong>Tryb B: Security by Design</strong>
+            <small>Allow-Listing • Bindowanie (?) • Least Privilege</small>
+          </div>
+        </button>
+      </div>
+    </header>
+
+    <!-- PASEK 4 FILARÓW ARCHITEKTURY (WIZUALIZACJA ZASAD SBD) -->
+    <section class="pillars-bar" aria-label="Filary architektury">
+      <div class="pillar-item" id="pillarValidation">
+        <span class="pillar-title">1. Walidacja wejścia (Zero-Trust)</span>
+        <span class="pillar-state" id="pillarValidationState">Brak (pełne zaufanie do frontendu)</span>
+      </div>
+      <div class="pillar-item" id="pillarQuery">
+        <span class="pillar-title">2. Komunikacja z bazą SQL</span>
+        <span class="pillar-state" id="pillarQueryState">Konkatenacja stringów (${id})</span>
+      </div>
+      <div class="pillar-item" id="pillarPrivilege">
+        <span class="pillar-title">3. Zasada Least Privilege</span>
+        <span class="pillar-state" id="pillarPrivilegeState">SELECT * (pobiera hasła i karty)</span>
+      </div>
+      <div class="pillar-item" id="pillarFail">
+        <span class="pillar-title">4. Obsługa błędów (Fail-Secure)</span>
+        <span class="pillar-state" id="pillarFailState">Wyciek surowych logów SQLite</span>
+      </div>
+    </section>
+
+    <!-- GŁÓWNA SEKCJA DWUKOLUMNOWA: WYSZUKIWARKA + PODGLĄD KODU -->
+    <section class="top-grid">
+      <!-- LEWA KOLUMNA: PANEL WYSZUKIWARKI -->
+      <div class="card search-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.5"></circle>
+              <line x1="10.4" y1="10.4" x2="14" y2="14"></line>
+            </svg>
+            Wyszukaj pracownika po ID
+          </h2>
+          <span id="architectureStatusBadge" class="status-pill pill-danger">
+            Architektura podatna
+          </span>
+        </div>
+
+        <form id="searchForm" class="search-form" autocomplete="off">
+          <label for="userIdInput" class="input-label">Identyfikator pracownika (parametr GET <code>?id=</code>):</label>
+          <div class="input-row">
+            <input
+              type="text"
+              id="userIdInput"
+              placeholder="Wpisz ID (np. 2) lub ładunek: 1 OR 1=1"
+              value="2"
+              required
+            />
+            <button type="submit" id="searchBtn" class="btn-submit">
+              Szukaj
+            </button>
+          </div>
+        </form>
+
+        <!-- PRZYCISKI TESTOWYCH ŁADUNKÓW (KOLEJNOŚĆ CHRONOLOGICZNA PREZENTACJI) -->
+        <div class="quick-actions">
+          <span class="quick-label">Scenariusze testowe:</span>
+          <button type="button" class="chip chip-normal" data-payload="2">
+            Poprawne ID: <code>2</code>
+          </button>
+          <button type="button" class="chip chip-probe" data-payload="1'">
+            Błąd składni (Fail-Secure): <code>1'</code>
+          </button>
+          <button type="button" class="chip chip-attack" data-payload="1 OR 1=1">
+            Wyciek bazy (SQLi): <code>1 OR 1=1</code>
+          </button>
+        </div>
+
+        <div class="executed-sql-box">
+          <span class="sql-label">Wykonywane zapytanie / Status warstwy bazodanowej:</span>
+          <code id="executedSqlPreview">SELECT * FROM users WHERE id = 2</code>
+        </div>
+      </div>
+
+      <!-- PRAWA KOLUMNA: PODGLĄD KODU BACKENDU NA ŻYWO -->
+      <div class="card code-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="5 4 1.5 8 5 12"></polyline>
+              <polyline points="11 4 14.5 8 11 12"></polyline>
+              <line x1="9.5" y1="2.5" x2="6.5" y2="13.5"></line>
+            </svg>
+            Podgląd kodu backendu (Node.js + SQLite)
+          </h2>
+          <span id="endpointBadge" class="endpoint-tag">GET /api/vulnerable/users</span>
+        </div>
+
+        <!-- Kod dla Trybu A -->
+        <pre id="codePreviewA" class="code-block"><code><span class="c-comment">// TRYB A: Architektura podatna (Insecure Design)</span>
+app.get(<span class="c-str">'/api/vulnerable/users'</span>, (req, res) =&gt; {
+  const id = req.query.id; <span class="c-comment">// Brak walidacji Allow-Listing</span>
+
+  <span class="c-bad-line">// LUKA 1: Konkatenacja stringów + LUKA 2: SELECT * (Brak Least Privilege)</span>
+  <span class="c-bad-line">const query = `SELECT * FROM users WHERE id = ${id}`;</span>
+
+  db.all(query, (err, rows) =&gt; {
+    <span class="c-bad-line">// LUKA 3: Brak Fail-Secure (zwraca surowe błędy bazy danych i zapytanie)</span>
+    <span class="c-bad-line">if (err) return res.status(500).json({ error: err.message, executedQuery: query });</span>
+    res.json(rows);
+  });
+});</code></pre>
+
+        <!-- Kod dla Trybu B -->
+        <pre id="codePreviewB" class="code-block hidden"><code><span class="c-comment">// TRYB B: Architektura Security by Design (Zero-Trust)</span>
+app.get(<span class="c-str">'/api/secure/users'</span>, (req, res) =&gt; {
+  const id = req.query.id;
+
+  <span class="c-good-line">// 1. Allow-Listing + Fail-Secure: tylko liczby całkowite, zero logów DB</span>
+  <span class="c-good-line">if (!/^\d+$/.test(id)) return res.status(400).json({ error: 'Zablokowano' });</span>
+
+  <span class="c-good-line">// 2. Least Privilege (tylko jawne kolumny) + 3. Bindowanie parametru (?)</span>
+  <span class="c-good-line">const sql = 'SELECT id, username, role FROM users WHERE id = ?';</span>
+  db.all(sql, [Number(id)], (err, rows) =&gt; {
+    <span class="c-good-line">// 4. Fail-Secure: logowanie wewnętrzne, ogólny komunikat 500 na zewnątrz</span>
+    <span class="c-good-line">if (err) { console.error(err); return res.status(500).json({ error: 'Błąd przetwarzania' }); }</span>
+    res.json(rows);
+  });
+});</code></pre>
+      </div>
+    </section>
+
+    <!-- DOLNA SEKCJA: BANERY STATUSU ORAZ TABELA WYNIKÓW -->
+    <section id="resultsSection" class="results-section">
+      <!-- Baner wycieku danych (Tryb A + SQLi 1 OR 1=1) -->
+      <div id="breachBanner" class="alert-banner banner-breach hidden">
+        <div class="banner-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="8" r="6.2"></circle>
+            <line x1="8" y1="4.8" x2="8" y2="8.5"></line>
+            <circle cx="8" cy="11.2" r="0.6" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="banner-content">
+          <h3>Naruszenie danych: atak SQL Injection i brak Least Privilege</h3>
+          <p>
+            Ładunek <code>1 OR 1=1</code> zmienił logikę zapytania! Ponieważ zapytanie używało <code>SELECT *</code>,
+            baza zwróciła <strong>wszystkich użytkowników wraz z hasłami i kartami kredytowymi</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Baner błędu składni i wycieku informacji technicznych (Tryb A + 1') -->
+      <div id="errorBanner" class="alert-banner banner-error hidden">
+        <div class="banner-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 2.2L1.8 13.2h12.4L8 2.2z"></path>
+            <line x1="8" y1="6.5" x2="8" y2="9.5"></line>
+            <circle cx="8" cy="11.5" r="0.5" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="banner-content">
+          <h3>Naruszenie zasady Fail-Secure: wyciek struktury bazy danych</h3>
+          <div class="error-leak-grid">
+            <div class="error-leak-item">
+              <span class="error-leak-label">Surowy wyjątek bazy danych:</span>
+              <code id="errorBannerText"></code>
+            </div>
+            <div class="error-leak-item" id="errorBannerQueryRow">
+              <span class="error-leak-label">Ujawnione zapytanie SQL:</span>
+              <code id="errorBannerQuery"></code>
+            </div>
+          </div>
+          <p id="errorBannerDetails" class="error-subdetails"></p>
+        </div>
+      </div>
+
+      <!-- Panel zablokowanego ataku i obrony warstwowej (Tryb B + SQLi / 1') -->
+      <div id="shieldBanner" class="shield-box hidden">
+        <div class="shield-header">
+          <div class="shield-icon" aria-hidden="true">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 1.8l5.2 2v4.1c0 3.4-2.2 5.7-5.2 6.6-3-0.9-5.2-3.2-5.2-6.6V3.8L8 1.8z"></path>
+              <polyline points="5.8 8.1 7.3 9.6 10.4 6.5"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3>Atak SQL Injection zablokowany u źródła. Nieprawidłowy format danych</h3>
+            <p class="shield-subtext">
+              Architektura <strong>Zero-Trust</strong> zweryfikowała dane wejściowe metodą <strong>Allow-Listing</strong> i odrzuciła
+              złośliwy ładunek zanim dotarł do bazy danych. Zgodnie z zasadą <strong>Fail-Secure</strong> żadne logi systemowe nie zostały ujawnione.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3-stopniowy status warstw obrony (Defense in Depth) -->
+        <div class="defense-layers" aria-label="Warstwy obrony Defense in Depth">
+          <div class="defense-layer layer-active">
+            <div class="layer-top">
+              <span class="layer-name">Warstwa 1 — Allow-Listing (<code>/^\d+$/</code>)</span>
+              <span class="layer-tag tag-blocked">Zablokowano</span>
+            </div>
+            <p class="layer-desc">Zablokowano żądanie (HTTP 400) przed bazą danych</p>
+          </div>
+
+          <div class="defense-layer layer-standby">
+            <div class="layer-top">
+              <span class="layer-name">Warstwa 2 — Parameterized Queries (<code>?</code>)</span>
+              <span class="layer-tag tag-standby">W rezerwie</span>
+            </div>
+            <p class="layer-desc">W rezerwie (oddziela kod SQL od danych)</p>
+          </div>
+
+          <div class="defense-layer layer-standby">
+            <div class="layer-top">
+              <span class="layer-name">Warstwa 3 — Least Privilege + Fail-Secure</span>
+              <span class="layer-tag tag-standby">Aktywna zasada</span>
+            </div>
+            <p class="layer-desc">Tylko jawne kolumny, brak logów DB w odpowiedzi</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela wyników -->
+      <div id="tableWrapper" class="card table-card">
+        <div class="table-header">
+          <h2 id="tableTitle">Wyniki zwrócone przez API</h2>
+          <span id="recordCountBadge" class="record-count">0 rekordów</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Użytkownik</th>
+                <th>Stanowisko / Rola</th>
+                <th id="thPassword" class="sensitive-col">Hasło (Plaintext)</th>
+                <th id="thCreditCard" class="sensitive-col">Karta kredytowa</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody">
+              <!-- Wiersze generowane dynamicznie w script.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

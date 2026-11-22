@@ -1,0 +1,999 @@
+:root {
+  /* Ciemny, matowy motyw inżynierski (styl GitHub Dark / Linear Dark) */
+  --bg-page: #0d1117;
+  --bg-card: #161b22;
+  --bg-subtle: #21262d;
+  --bg-inset: #090d13;
+  --border-default: #30363d;
+  --text-main: #e6edf3;
+  --text-muted: #8b949e;
+
+  /* Stonowane, płaskie akcenty semantyczne — Tryb A / Zagrożenie / SQLi (Czerwony) */
+  --danger-bg: rgba(248, 81, 73, 0.12);
+  --danger-bg-strong: rgba(248, 81, 73, 0.2);
+  --danger-border: #f85149;
+  --danger-border-soft: rgba(248, 81, 73, 0.4);
+  --danger-text: #ffa198;
+
+  /* Ostrzeżenie / Błąd składni 1' (Bursztynowy / Żółty) */
+  --warn-bg: rgba(210, 153, 34, 0.12);
+  --warn-bg-strong: rgba(210, 153, 34, 0.22);
+  --warn-border: #d29922;
+  --warn-border-soft: rgba(210, 153, 34, 0.45);
+  --warn-text: #e3b341;
+
+  /* Tryb B / Bezpieczne / Least Privilege (Zielony) */
+  --secure-bg: rgba(46, 160, 67, 0.12);
+  --secure-bg-strong: rgba(46, 160, 67, 0.2);
+  --secure-border: #3fb950;
+  --secure-border-soft: rgba(46, 160, 67, 0.4);
+  --secure-text: #7ee787;
+
+  /* Przycisk główny i blok kodu */
+  --btn-primary: #1f6feb;
+  --btn-primary-hover: #388bfd;
+  --code-bg: #090d13;
+  --code-border: #30363d;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.45;
+  padding: 16px 24px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ============================================================================
+   1. NAGŁÓWEK I PRZEŁĄCZNIK TRYBÓW
+   ============================================================================ */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-default);
+  flex-wrap: wrap;
+}
+
+.brand {
+  min-width: 0;
+}
+
+.brand-badge {
+  display: inline-block;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.4px;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  margin-bottom: 4px;
+}
+
+.app-header h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text-main);
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.mode-switcher {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-card);
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  max-width: 100%;
+}
+
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-sans);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.mode-btn:hover {
+  color: var(--text-main);
+  background: var(--bg-subtle);
+}
+
+.mode-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.mode-text strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.mode-text small {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.mode-btn.active-vulnerable {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+.mode-btn.active-vulnerable .mode-indicator {
+  background: var(--danger-bg-strong);
+  color: var(--danger-text);
+}
+
+.mode-btn.active-vulnerable .mode-text small {
+  color: var(--danger-text);
+  opacity: 0.9;
+}
+
+.mode-btn.active-secure {
+  background: var(--secure-bg);
+  border-color: var(--secure-border);
+  color: var(--secure-text);
+}
+
+.mode-btn.active-secure .mode-indicator {
+  background: var(--secure-bg-strong);
+  color: var(--secure-text);
+}
+
+.mode-btn.active-secure .mode-text small {
+  color: var(--secure-text);
+  opacity: 0.9;
+}
+
+/* ============================================================================
+   2. PASEK 4 FILARÓW ARCHITEKTURY SBD
+   ============================================================================ */
+.pillars-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pillar-item {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border-soft);
+  border-left: 3px solid var(--danger-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 0;
+}
+
+body.mode-secure .pillar-item {
+  background: var(--secure-bg);
+  border-color: var(--secure-border-soft);
+  border-left: 3px solid var(--secure-border);
+}
+
+.pillar-title {
+  display: block;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.pillar-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--danger-text);
+}
+
+.pillar-state::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--danger-border);
+  flex-shrink: 0;
+}
+
+body.mode-secure .pillar-state {
+  color: var(--secure-text);
+}
+
+body.mode-secure .pillar-state::before {
+  background-color: var(--secure-border);
+}
+
+/* ============================================================================
+   3. SIATKA GÓRNA: WYSZUKIWARKA + PODGLĄD KODU
+   ============================================================================ */
+.top-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-title,
+.card-header h2,
+.table-header h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.04rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.card-title svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.status-pill {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.pill-danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border-soft);
+}
+
+.pill-secure {
+  background: var(--secure-bg);
+  color: var(--secure-text);
+  border: 1px solid var(--secure-border-soft);
+}
+
+/* FORMULARZ WYSZUKIWANIA */
+.input-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.input-label code {
+  font-family: var(--font-mono);
+  background: var(--bg-subtle);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--text-main);
+  font-size: 0.84rem;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+#userIdInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  color: var(--text-main);
+  font-size: 1.12rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 7px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+#userIdInput:focus {
+  border-color: var(--btn-primary-hover);
+}
+
+.btn-submit {
+  flex-shrink: 0;
+  background: var(--btn-primary);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  padding: 8px 20px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-submit:hover {
+  background: var(--btn-primary-hover);
+}
+
+/* PRZYCISKI SCENARIUSZY TESTOWYCH */
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.chip {
+  font-family: var(--font-sans);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  color: var(--text-main);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  text-align: left;
+}
+
+.chip code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.chip-normal:hover {
+  background: #30363d;
+  border-color: #6e7681;
+}
+
+.chip-probe {
+  background: var(--warn-bg);
+  border-color: var(--warn-border-soft);
+  color: var(--warn-text);
+}
+
+.chip-probe:hover {
+  background: var(--warn-bg-strong);
+  border-color: var(--warn-border);
+}
+
+.chip-attack {
+  background: var(--danger-bg);
+  border-color: var(--danger-border-soft);
+  color: var(--danger-text);
+}
+
+.chip-attack:hover {
+  background: var(--danger-bg-strong);
+  border-color: var(--danger-border);
+}
+
+/* PASEK WYKONYWANEGO ZAPYTANIA SQL */
+.executed-sql-box {
+  margin-top: 12px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 7px;
+  padding: 9px 12px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sql-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+#executedSqlPreview {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #a5d6ff;
+  word-break: break-word;
+}
+
+/* ============================================================================
+   4. PODGLĄD KODU BACKENDU
+   ============================================================================ */
+.endpoint-tag {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-inset);
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  line-height: 1.48;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  color: var(--text-main);
+}
+
+.code-block code {
+  display: block;
+  min-width: max-content;
+}
+
+.c-comment {
+  color: #8b949e;
+}
+
+.c-str {
+  color: #a5d6ff;
+}
+
+.c-bad-line {
+  display: inline-block;
+  width: 100%;
+  background: var(--danger-bg);
+  border-left: 3px solid var(--danger-border);
+  padding-left: 8px;
+  padding-right: 8px;
+  color: var(--danger-text);
+}
+
+.c-good-line {
+  display: inline-block;
+  width: 100%;
+  background: var(--secure-bg);
+  border-left: 3px solid var(--secure-border);
+  padding-left: 8px;
+  padding-right: 8px;
+  color: var(--secure-text);
+}
+
+/* ============================================================================
+   5. BANERY STATUSU (WYCIEK / BŁĄD FAIL-SECURE / BLOKADA SBD)
+   ============================================================================ */
+.alert-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.banner-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.banner-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.banner-content h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.banner-content p {
+  font-size: 0.9rem;
+}
+
+.banner-content code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Baner wycieku SQLi */
+.banner-breach {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
+}
+
+.banner-breach .banner-icon {
+  background: var(--danger-bg-strong);
+  color: var(--danger-text);
+}
+
+.banner-breach .banner-content p {
+  color: var(--text-main);
+}
+
+.banner-breach code {
+  background: var(--danger-bg-strong);
+  color: var(--danger-text);
+}
+
+/* Baner błędu składni (1') — Fail-Secure */
+.banner-error {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+}
+
+.banner-error .banner-icon {
+  background: var(--warn-bg-strong);
+  color: var(--warn-text);
+}
+
+.error-leak-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+  margin: 8px 0 6px 0;
+}
+
+.error-leak-item {
+  background: var(--bg-inset);
+  border: 1px solid var(--warn-border-soft);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.error-leak-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--warn-text);
+  margin-bottom: 2px;
+}
+
+#errorBannerText,
+#errorBannerQuery {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--danger-text);
+  background: transparent;
+  padding: 0;
+  display: block;
+  word-break: break-word;
+}
+
+.error-subdetails {
+  color: var(--text-main);
+  font-size: 0.86rem;
+}
+
+/* Panel zablokowanego ataku w Trybie B (Defense in Depth) */
+.shield-box {
+  background: var(--secure-bg);
+  border: 1px solid var(--secure-border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.shield-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.shield-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--secure-bg-strong);
+  color: var(--secure-text);
+  flex-shrink: 0;
+}
+
+.shield-box h3 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--secure-text);
+  margin-bottom: 3px;
+}
+
+.shield-subtext {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.defense-layers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.defense-layer {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.defense-layer.layer-active {
+  border-color: var(--secure-border-soft);
+  border-left: 3px solid var(--secure-border);
+}
+
+.layer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.layer-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.layer-name code {
+  font-family: var(--font-mono);
+  background: var(--bg-subtle);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--secure-text);
+}
+
+.layer-tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.tag-blocked {
+  background: var(--secure-bg);
+  color: var(--secure-text);
+  border: 1px solid var(--secure-border-soft);
+}
+
+.tag-standby {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-default);
+}
+
+.layer-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   6. TABELA WYNIKÓW
+   ============================================================================ */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.record-count {
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  color: var(--text-main);
+}
+
+.record-count.count-breach {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 9px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.results-table th {
+  background: var(--bg-inset);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.results-table th.sensitive-col {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border-bottom: 2px solid var(--danger-border);
+}
+
+.results-table th.protected-col {
+  color: var(--secure-text);
+  background: var(--secure-bg);
+  border-bottom: 2px solid var(--secure-border);
+}
+
+.results-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.results-table tbody tr.row-leaked {
+  background: rgba(248, 81, 73, 0.05);
+}
+
+.cell-id {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cell-sensitive {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border-left: 3px solid var(--danger-border);
+  white-space: nowrap;
+}
+
+.cell-protected {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--secure-text);
+  background: var(--secure-bg);
+  border-left: 3px solid var(--secure-border);
+  white-space: nowrap;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-default);
+  color: var(--text-main);
+  white-space: nowrap;
+}
+
+.role-admin {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  border-color: var(--warn-border-soft);
+  font-weight: 600;
+}
+
+.empty-row-cell {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 18px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ============================================================================
+   RESPONSYWNOŚĆ — TABLETY I MNIEJSZE EKRANY
+   ============================================================================ */
+@media (max-width: 1100px) {
+  .top-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pillars-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .defense-layers {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
+   RESPONSYWNOŚĆ — SMARTFONY (WERSJA MOBILNA DLA PUBLICZNOŚCI)
+   ============================================================================ */
+@media (max-width: 680px) {
+  body {
+    padding: 12px;
+  }
+
+  .app-header {
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+
+  .app-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .mode-switcher {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .mode-btn {
+    width: 100%;
+  }
+
+  .pillars-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .quick-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .chip {
+    width: 100%;
+    padding: 7px 10px;
+  }
+
+  .code-block {
+    padding: 10px;
+    font-size: 0.76rem;
+  }
+
+  .code-block code {
+    min-width: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .c-bad-line,
+  .c-good-line {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .results-table {
+    font-size: 0.86rem;
+  }
+
+  .results-table th,
+  .results-table td {
+    padding: 8px 10px;
+  }
+}
