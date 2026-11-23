@@ -30,3 +30,8 @@ Aplikacja korzysta z bazy SQLite w pamięci RAM w trybie tylko do odczytu (`PRAG
 cd demo
 npm install
 npm start
+```
+
+*(W Windows PowerShell, jeśli skrypty są zablokowane, użyj `npm.cmd install` i `node server.js`.)*
+
+Po uruchomieniu otwórz w przeglądarce: `http://localhost:3000`
