@@ -4,6 +4,12 @@ Materiały do prezentacji oraz aplikacja demonstracyjna Live Demo z przedmiotu *
 
 **Autorzy:** Oskar Czenczek, Mateusz Antkiewicz, Julia Juryniec
 
+## Opis projektu
+
+Projekt przedstawia podejście **Security by Design** w tworzeniu aplikacji webowych i mobilnych - czyli wbudowywanie zabezpieczeń już na etapie projektowania, zamiast łatania podatności dopiero po wdrożeniu. Część teoretyczna omawia m.in. zasadę Shift-Left, koszty naprawiania błędów architektonicznych, zagrożenia z listy OWASP Top 10 oraz specyfikę bezpieczeństwa aplikacji mobilnych.
+
+Częścią praktyczną jest interaktywna aplikacja webowa **Hack & Secure Sandbox** (Node.js + Express + SQLite w pamięci RAM), działająca jako wyszukiwarka pracowników w dwóch przełączanych wariantach: podatnym (**Tryb A**, demonstrującym naruszenie Fail-Secure i atak SQL Injection) oraz zabezpieczonym (**Tryb B**, realizującym obronę warstwową: Allow-Listing, zapytania parametryzowane, Least Privilege i Fail-Secure).
+
 ## Zawartość repozytorium
 
 - `prezentacja.pptx` — slajdy do wystąpienia.
